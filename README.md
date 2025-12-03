@@ -54,3 +54,7 @@ npm test
 ```bash
 npm run lint
 ```
+
+### Asciinema
+
+https://asciinema.org/a/KM0ZAYbW5YJHH1ENXavHFPaft
