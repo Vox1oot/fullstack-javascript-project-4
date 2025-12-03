@@ -1,5 +1,11 @@
-import { formatter } from "./formatter.js";
+import { formatter } from "./utils/formatter.js";
+import { load } from "./utils/loader.js";
+import { logger } from "./utils/logger.js";
 
-export const main = (url) => {
-  console.log(`URL: ${formatter(url)}`);
+export const startApplication = (url, outputDir) => {
+  const fileName = formatter(url);
+
+  load(url, outputDir, fileName)
+    .then((pathName) => logger.success(pathName))
+    .catch((error) => logger.error(error.message));
 };
