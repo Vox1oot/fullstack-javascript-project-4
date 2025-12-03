@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "description": "CLI утилита для загрузки веб-страниц",
-  "main": "src/loader.js",
+  "main": "src/main.js",
   "bin": {
-    "page-loader": "src/bin/main.js"
+    "page-loader": "bin/page-loader.js"
   },
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "lint": "eslint ."
   },
   "repository": {

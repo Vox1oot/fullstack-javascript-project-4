@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { formatter } from "../formatter.js";
+import { main } from "../src/main.js";
 
 program
   .version("1.0.0")
@@ -9,7 +9,7 @@ program
   .argument("<url>")
   .option("-o --output [dir]", "output dir", process.cwd())
   .action((url, options) => {
-    console.log(`URL: ${formatter(url)}`);
+    main(url);
     console.log(`Output: ${options.output}`);
   });
 
