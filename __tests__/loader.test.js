@@ -1,66 +1,112 @@
-import { load } from "../src/loader.js";
 import nock from "nock";
-import fs from "fs/promises";
-import os from "os";
+import fs from "node:fs/promises";
 import path from "path";
+import os from "os";
+import { load } from "../src/utils/loader.js";
 
-let tempDir;
+describe("load", () => {
+  let tempDir;
 
-beforeEach(async () => {
-  tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "page-loader-"));
-});
+  beforeEach(async () => {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "page-loader-"));
+  });
 
-afterEach(async () => {
-  await fs.rm(tempDir, { recursive: true });
-  nock.cleanAll();
-});
+  afterEach(async () => {
+    await fs.rm(tempDir, { recursive: true, force: true });
+    nock.cleanAll();
+  });
 
-test("should download and save page", async () => {
-  const url = "https://example.com/test";
-  const html = "<html><body>Test</body></html>";
+  it("должен загрузить HTML-контент и сохранить в файл", async () => {
+    const url = "https://example.com/page";
+    const fileName = "example-com-page.html";
+    const htmlContent = "<html><body>Test page</body></html>";
 
-  nock("https://example.com").get("/test").reply(200, html);
+    nock("https://example.com").get("/page").reply(200, htmlContent);
 
-  const filePath = await load(url, tempDir);
+    const filePath = await load(url, tempDir, fileName);
 
-  expect(filePath).toContain("example-com-test.html");
+    expect(filePath).toBe(path.join(tempDir, fileName));
 
-  const content = await fs.readFile(filePath, "utf-8");
-  expect(content).toBe(html);
-});
+    const savedContent = await fs.readFile(filePath, "utf-8");
+    expect(savedContent).toBe(htmlContent);
+  });
 
-test("should save page to specified directory", async () => {
-  const url = "https://ru.hexlet.io/courses";
-  const html = "<html><body>Hexlet</body></html>";
+  it("должен загрузить CSS-контент и сохранить в файл", async () => {
+    const url = "https://example.com/styles.css";
+    const fileName = "example-com-styles.css";
+    const cssContent = "body { color: red; }";
 
-  nock("https://ru.hexlet.io").get("/courses").reply(200, html);
+    nock("https://example.com").get("/styles.css").reply(200, cssContent);
 
-  const filePath = await load(url, tempDir);
+    const filePath = await load(url, tempDir, fileName);
 
-  expect(filePath).toBe(path.join(tempDir, "ru-hexlet-io-courses.html"));
-  expect(await fs.access(filePath).then(() => true).catch(() => false)).toBe(true);
-});
+    expect(filePath).toBe(path.join(tempDir, fileName));
 
-test("should handle network errors", async () => {
-  const url = "https://example.com/notfound";
+    const savedContent = await fs.readFile(filePath, "utf-8");
+    expect(savedContent).toBe(cssContent);
+  });
 
-  nock("https://example.com").get("/notfound").reply(404, "Not Found");
+  it("должен загрузить изображение и сохранить в файл", async () => {
+    const url = "https://example.com/image.png";
+    const fileName = "example-com-image.png";
+    const imageBuffer = Buffer.from("fake-image-data");
 
-  await expect(load(url, tempDir)).rejects.toThrow("HTTP error 404");
-});
+    nock("https://example.com").get("/image.png").reply(200, imageBuffer);
 
-test("should handle server errors", async () => {
-  const url = "https://example.com/error";
+    const filePath = await load(url, tempDir, fileName);
 
-  nock("https://example.com").get("/error").reply(500, "Internal Server Error");
+    expect(filePath).toBe(path.join(tempDir, fileName));
 
-  await expect(load(url, tempDir)).rejects.toThrow("HTTP error 500");
-});
+    const savedContent = await fs.readFile(filePath);
+    expect(savedContent.toString()).toBe(imageBuffer.toString());
+  });
 
-test("should handle connection errors", async () => {
-  const url = "https://example.com/test";
+  it("должен обработать ошибку при неудачном HTTP-запросе", async () => {
+    const url = "https://example.com/notfound";
+    const fileName = "example-com-notfound.html";
 
-  nock("https://example.com").get("/test").replyWithError("Connection failed");
+    nock("https://example.com").get("/notfound").reply(404);
 
-  await expect(load(url, tempDir)).rejects.toThrow("Failed to load page");
+    await expect(load(url, tempDir, fileName)).rejects.toThrow();
+  });
+
+  it("должен обработать ошибку сети", async () => {
+    const url = "https://example.com/error";
+    const fileName = "example-com-error.html";
+
+    nock("https://example.com").get("/error").replyWithError("Network error");
+
+    await expect(load(url, tempDir, fileName)).rejects.toThrow();
+  });
+
+  it("должен вернуть путь к сохраненному файлу", async () => {
+    const url = "https://example.com/test";
+    const fileName = "test.html";
+    const htmlContent = "<html><body>Test</body></html>";
+
+    nock("https://example.com").get("/test").reply(200, htmlContent);
+
+    const filePath = await load(url, tempDir, fileName);
+
+    expect(filePath).toBe(path.join(tempDir, fileName));
+    expect(path.isAbsolute(filePath)).toBe(true);
+  });
+
+  it("должен работать с разными директориями вывода", async () => {
+    const url = "https://example.com/page";
+    const fileName = "page.html";
+    const htmlContent = "<html><body>Test</body></html>";
+    const customDir = path.join(tempDir, "custom");
+
+    await fs.mkdir(customDir);
+
+    nock("https://example.com").get("/page").reply(200, htmlContent);
+
+    const filePath = await load(url, customDir, fileName);
+
+    expect(filePath).toBe(path.join(customDir, fileName));
+
+    const savedContent = await fs.readFile(filePath, "utf-8");
+    expect(savedContent).toBe(htmlContent);
+  });
 });

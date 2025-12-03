@@ -1,4 +1,4 @@
-import { formatter } from "../src/formatter.js";
+import { formatter } from "../src/utils/formatter.js";
 
 describe("formatter", () => {
   it.each([
