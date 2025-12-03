@@ -2,6 +2,7 @@
 
 [![Actions Status](https://github.com/Vox1oot/fullstack-javascript-project-4/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Vox1oot/fullstack-javascript-project-4/actions)
 [![CI](https://github.com/Vox1oot/fullstack-javascript-project-4/actions/workflows/ci.yml/badge.svg)](https://github.com/Vox1oot/fullstack-javascript-project-4/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Vox1oot_fullstack-javascript-project-4&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Vox1oot_fullstack-javascript-project-4)
 
 ## Page Loader
 
