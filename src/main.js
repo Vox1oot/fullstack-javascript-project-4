@@ -7,5 +7,8 @@ export const startApplication = (url, outputDir) => {
 
   load(url, outputDir, fileName)
     .then((pathName) => logger.success(pathName))
-    .catch((error) => logger.error(error.message));
+    .catch((error) => {
+      logger.error(error.message);
+      process.exit(1);
+    });
 };
