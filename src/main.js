@@ -1,9 +1,9 @@
-import { formatter } from "./utils/formatter.js";
+import { formatFilePath } from "./utils/formatter.js";
 import { load } from "./utils/loader.js";
 import { logger } from "./utils/logger.js";
 
 export const startApplication = (url, outputDir) => {
-  const fileName = formatter(url);
+  const fileName = formatFilePath(url);
 
   load(url, outputDir, fileName)
     .then((pathName) => logger.success(pathName))
