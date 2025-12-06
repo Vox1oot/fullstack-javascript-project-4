@@ -6,7 +6,7 @@ const ensureDirExists = (dir) => {
     fs.access(dir, fs.constants.F_OK)
       .then(() => resolve())
       .catch(() => {
-        fs.mkdir(dir)
+        fs.mkdir(dir, { recursive: true })
           .then(() => resolve())
           .catch(reject);
       });
@@ -18,9 +18,8 @@ export const writeFile = (outputDir, fileName, data) => {
     ensureDirExists(outputDir)
       .then(() => {
         const filePath = path.join(outputDir, fileName);
-        const relativePath = path.relative(process.cwd(), filePath);
         fs.writeFile(filePath, data)
-          .then(() => resolve(relativePath))
+          .then(() => resolve(filePath))
           .catch(reject);
       })
       .catch(reject);

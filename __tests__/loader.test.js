@@ -1,7 +1,7 @@
 import nock from "nock";
-import { load } from "../src/utils/loader.js";
+import { loader } from "../src/services/loader.service.js";
 
-describe("load", () => {
+describe("loader", () => {
   afterEach(() => {
     nock.cleanAll();
   });
@@ -12,7 +12,7 @@ describe("load", () => {
 
     nock("https://example.com").get("/page").reply(200, htmlContent);
 
-    const data = await load(url);
+    const data = await loader.load(url);
 
     expect(data).toBe(htmlContent);
   });
@@ -23,7 +23,7 @@ describe("load", () => {
 
     nock("https://example.com").get("/styles.css").reply(200, cssContent);
 
-    const data = await load(url);
+    const data = await loader.load(url);
 
     expect(data).toBe(cssContent);
   });
@@ -33,7 +33,7 @@ describe("load", () => {
 
     nock("https://example.com").get("/notfound").reply(404);
 
-    await expect(load(url)).rejects.toThrow();
+    await expect(loader.load(url)).rejects.toThrow();
   });
 
   it("должен обработать ошибку сети", async () => {
@@ -41,6 +41,6 @@ describe("load", () => {
 
     nock("https://example.com").get("/error").replyWithError("Network error");
 
-    await expect(load(url)).rejects.toThrow();
+    await expect(loader.load(url)).rejects.toThrow();
   });
 });

@@ -1,9 +1,9 @@
 import fs from "node:fs/promises";
 import path from "path";
 import os from "os";
-import { write } from "../src/utils/writer.js";
+import { writeFile } from "../src/utils/writeFile.js";
 
-describe("write", () => {
+describe("writeFile", () => {
   let tempDir;
 
   beforeEach(async () => {
@@ -18,7 +18,7 @@ describe("write", () => {
     const fileName = "test.html";
     const content = "<html><body>Test</body></html>";
 
-    const filePath = await write(tempDir, fileName, content);
+    const filePath = await writeFile(tempDir, fileName, content);
 
     const savedContent = await fs.readFile(filePath, "utf-8");
     expect(savedContent).toBe(content);
@@ -28,7 +28,7 @@ describe("write", () => {
     const fileName = "test.html";
     const content = "<html><body>Test</body></html>";
 
-    const filePath = await write(tempDir, fileName, content);
+    const filePath = await writeFile(tempDir, fileName, content);
 
     expect(filePath).toBe(path.join(tempDir, fileName));
     expect(path.isAbsolute(filePath)).toBe(true);
@@ -38,7 +38,7 @@ describe("write", () => {
     const cssFileName = "styles.css";
     const cssContent = "body { color: red; }";
 
-    const filePath = await write(tempDir, cssFileName, cssContent);
+    const filePath = await writeFile(tempDir, cssFileName, cssContent);
 
     const savedContent = await fs.readFile(filePath, "utf-8");
     expect(savedContent).toBe(cssContent);
@@ -49,6 +49,6 @@ describe("write", () => {
     const content = "<html><body>Test</body></html>";
     const invalidDir = "/nonexistent/directory";
 
-    await expect(write(invalidDir, fileName, content)).rejects.toThrow();
+    await expect(writeFile(invalidDir, fileName, content)).rejects.toThrow();
   });
 });
