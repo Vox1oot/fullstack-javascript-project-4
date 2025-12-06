@@ -29,11 +29,11 @@ export class HtmlParserService {
   }
 
   _isLocalResource(url) {
-    return !(url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://"));
-  }
-
-  replaceImgBySrc(src, newValue) {
-    this._$(`img[src="${src}"]`).attr("src", newValue);
+    return !(
+      url.startsWith("data:") ||
+      url.startsWith("http://") ||
+      url.startsWith("https://")
+    );
   }
 
   replaceResourcePath(type, attribute, originalPath, newPath) {
