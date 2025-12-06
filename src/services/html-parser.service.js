@@ -6,18 +6,38 @@ export class HtmlParserService {
   }
 
   getImageSources() {
+    return this._getResourceSources("img", "src");
+  }
+
+  getScriptSources() {
+    return this._getResourceSources("script", "src");
+  }
+
+  getStyleSources() {
+    return this._getResourceSources("link[rel='stylesheet']", "href");
+  }
+
+  _getResourceSources(selector, attribute) {
     const sources = [];
-    this._$("img").each((_, element) => {
-      const src = this._$(element).attr("src");
-      if (src && !(src.startsWith("data") || src.startsWith("http"))) {
-        sources.push(src);
+    this._$(selector).each((_, element) => {
+      const value = this._$(element).attr(attribute);
+      if (value && this._isLocalResource(value)) {
+        sources.push(value);
       }
     });
     return sources;
   }
 
+  _isLocalResource(url) {
+    return !(url.startsWith("data:") || url.startsWith("http://") || url.startsWith("https://"));
+  }
+
   replaceImgBySrc(src, newValue) {
     this._$(`img[src="${src}"]`).attr("src", newValue);
+  }
+
+  replaceResourcePath(type, attribute, originalPath, newPath) {
+    this._$(`${type}[${attribute}="${originalPath}"]`).attr(attribute, newPath);
   }
 
   getHtml() {
