@@ -18,9 +18,11 @@ export const startApplication = (url, outputDir) => {
         htmlParser
       );
 
-      return resourceProcessor
-        .processResources("images")
-        .then(() => htmlParser.getHtml());
+      return Promise.all([
+        resourceProcessor.processResources("images"),
+        resourceProcessor.processResources("scripts"),
+        resourceProcessor.processResources("links"),
+      ]).then(() => htmlParser.getHtml());
     })
     .then((updatedHtml) => {
       return writeFile(outputDir, htmlFileName, updatedHtml);

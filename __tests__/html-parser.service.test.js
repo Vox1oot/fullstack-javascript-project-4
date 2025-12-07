@@ -89,7 +89,7 @@ describe("HtmlParserService", () => {
   });
 
   describe("getStyleSources", () => {
-    it("должен извлекать href стилей", async () => {
+    it("должен извлекать href всех link элементов", async () => {
       const html = await readFixture("styles-multiple.html");
 
       const parser = new HtmlParserService(html);
@@ -98,6 +98,7 @@ describe("HtmlParserService", () => {
       expect(sources).toEqual([
         "/css/main.css",
         "https://cdn.example.com/style.css",
+        "/favicon.ico",
       ]);
     });
 

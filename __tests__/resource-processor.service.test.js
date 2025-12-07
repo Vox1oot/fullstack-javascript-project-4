@@ -39,7 +39,11 @@ describe("ResourceProcessorService", () => {
         .reply(200, imageData);
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("images");
 
@@ -60,7 +64,11 @@ describe("ResourceProcessorService", () => {
         .reply(200, imageData);
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("images");
 
@@ -83,7 +91,11 @@ describe("ResourceProcessorService", () => {
         .reply(200, Buffer.from("img3"));
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("images");
 
@@ -97,9 +109,15 @@ describe("ResourceProcessorService", () => {
       const html = await readFixture("no-images.html");
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
-      await expect(processor.processResources("images")).resolves.toBeUndefined();
+      await expect(
+        processor.processResources("images")
+      ).resolves.toBeUndefined();
     });
   });
 
@@ -110,12 +128,14 @@ describe("ResourceProcessorService", () => {
 
       const scriptData = "console.log('test');";
 
-      nock("https://example.com")
-        .get("/js/app.js")
-        .reply(200, scriptData);
+      nock("https://example.com").get("/js/app.js").reply(200, scriptData);
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("scripts");
 
@@ -134,7 +154,11 @@ describe("ResourceProcessorService", () => {
         .reply(200, "console.log('test');");
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("scripts");
 
@@ -145,21 +169,23 @@ describe("ResourceProcessorService", () => {
     });
   });
 
-  describe("processResources - styles", () => {
-    it("должен обрабатывать стили", async () => {
+  describe("processResources - links", () => {
+    it("должен обрабатывать links", async () => {
       const baseUrl = "https://example.com";
       const html = await readFixture("single-style.html");
 
       const cssData = "body { color: red; }";
 
-      nock("https://example.com")
-        .get("/css/main.css")
-        .reply(200, cssData);
+      nock("https://example.com").get("/css/main.css").reply(200, cssData);
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
-      await processor.processResources("styles");
+      await processor.processResources("links");
 
       const resourceDir = path.join(tempDir, "example-com_files");
       const files = await fs.readdir(resourceDir);
@@ -176,9 +202,13 @@ describe("ResourceProcessorService", () => {
         .reply(200, "body { color: red; }");
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
-      await processor.processResources("styles");
+      await processor.processResources("links");
 
       const updatedHtml = htmlParser.getHtml();
       expect(updatedHtml).toContain("example-com_files");
@@ -193,10 +223,14 @@ describe("ResourceProcessorService", () => {
       const html = await readFixture("empty.html");
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await expect(processor.processResources("videos")).rejects.toThrow(
-        "Поддерживаются только следующие типы ресурсов: images, scripts, styles"
+        "Поддерживаются только следующие типы ресурсов: images, scripts, links"
       );
     });
   });
@@ -207,7 +241,11 @@ describe("ResourceProcessorService", () => {
       const html = await readFixture("empty.html");
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       expect(processor.resourceDirName).toBe(
         path.resolve(tempDir, "example-com-page_files")
@@ -216,22 +254,25 @@ describe("ResourceProcessorService", () => {
   });
 
   describe("обработка абсолютных и относительных путей", () => {
-    it("должен обрабатывать абсолютные URL", async () => {
+    it("должен игнорировать абсолютные URL с другого домена", async () => {
       const baseUrl = "https://example.com";
       const html = await readFixture("absolute-url.html");
 
-      nock("https://cdn.example.com")
-        .get("/image.png")
-        .reply(200, Buffer.from("img"));
-
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("images");
 
-      const resourceDir = path.join(tempDir, "example-com_files");
-      const files = await fs.readdir(resourceDir);
-      expect(files).toHaveLength(1);
+      const resourceDirPath = path.join(tempDir, "example-com_files");
+      const dirExists = await fs
+        .access(resourceDirPath)
+        .then(() => true)
+        .catch(() => false);
+      expect(dirExists).toBe(false);
     });
 
     it("должен обрабатывать относительные пути", async () => {
@@ -243,13 +284,101 @@ describe("ResourceProcessorService", () => {
         .reply(200, Buffer.from("img"));
 
       const htmlParser = new HtmlParserService(html);
-      const processor = new ResourceProcessorService(baseUrl, tempDir, htmlParser);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
 
       await processor.processResources("images");
 
       const resourceDir = path.join(tempDir, "example-com-page_files");
       const files = await fs.readdir(resourceDir);
       expect(files).toHaveLength(1);
+    });
+  });
+
+  describe("обработка локальных ресурсов", () => {
+    it("должен скачивать только локальные ресурсы и игнорировать внешние", async () => {
+      const baseUrl = "https://ru.hexlet.io/courses";
+      const html = await readFixture("hexlet-courses.html");
+
+      nock("https://ru.hexlet.io")
+        .get("/assets/application.css")
+        .reply(200, "body { color: red; }")
+        .get("/courses")
+        .reply(200, "<html></html>")
+        .get("/assets/professions/nodejs.png")
+        .reply(200, Buffer.from("image"))
+        .get("/packs/js/runtime.js")
+        .reply(200, "console.log('runtime');");
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await Promise.all([
+        processor.processResources("images"),
+        processor.processResources("scripts"),
+        processor.processResources("links"),
+      ]);
+
+      const resourceDir = path.join(tempDir, "ru-hexlet-io-courses_files");
+      const files = await fs.readdir(resourceDir);
+
+      expect(files).toHaveLength(4);
+      expect(files).toContain("ru-hexlet-io-assets-application.css");
+      expect(files).toContain("ru-hexlet-io-courses.html");
+      expect(files).toContain("ru-hexlet-io-assets-professions-nodejs.png");
+      expect(files).toContain("ru-hexlet-io-packs-js-runtime.js");
+    });
+
+    it("должен обновлять только локальные ссылки в HTML", async () => {
+      const baseUrl = "https://ru.hexlet.io/courses";
+      const html = await readFixture("hexlet-courses.html");
+
+      nock("https://ru.hexlet.io")
+        .get("/assets/application.css")
+        .reply(200, "body { color: red; }")
+        .get("/courses")
+        .reply(200, "<html></html>")
+        .get("/assets/professions/nodejs.png")
+        .reply(200, Buffer.from("image"))
+        .get("/packs/js/runtime.js")
+        .reply(200, "console.log('runtime');");
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await Promise.all([
+        processor.processResources("images"),
+        processor.processResources("scripts"),
+        processor.processResources("links"),
+      ]);
+
+      const updatedHtml = htmlParser.getHtml();
+
+      expect(updatedHtml).toContain("https://cdn2.hexlet.io/assets/menu.css");
+      expect(updatedHtml).toContain("https://js.stripe.com/v3/");
+      expect(updatedHtml).toContain(
+        "ru-hexlet-io-courses_files/ru-hexlet-io-assets-application.css"
+      );
+      expect(updatedHtml).toContain(
+        "ru-hexlet-io-courses_files/ru-hexlet-io-courses.html"
+      );
+      expect(updatedHtml).toContain(
+        "ru-hexlet-io-courses_files/ru-hexlet-io-assets-professions-nodejs.png"
+      );
+      expect(updatedHtml).toContain(
+        "ru-hexlet-io-courses_files/ru-hexlet-io-packs-js-runtime.js"
+      );
     });
   });
 });

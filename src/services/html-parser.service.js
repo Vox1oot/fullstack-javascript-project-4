@@ -14,7 +14,7 @@ export class HtmlParserService {
   }
 
   getStyleSources() {
-    return this._getResourceSources("link[rel='stylesheet']", "href");
+    return this._getResourceSources("link[href]", "href");
   }
 
   _getResourceSources(selector, attribute) {

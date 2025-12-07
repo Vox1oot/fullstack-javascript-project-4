@@ -5,17 +5,18 @@ import { buildResourceUrl } from "../utils/buildResourceUrl.js";
 import path from "path";
 
 export class ResourceProcessorService {
-  #_resourceTypes = ["images", "scripts", "styles"];
+  #_resourceTypes = ["images", "scripts", "links"];
 
   constructor(baseUrl, outputDir, htmlParser) {
     this.baseUrl = baseUrl;
     this.outputDir = outputDir;
     this.htmlParser = htmlParser;
     this.resourceDirName = path.resolve(outputDir, formatDirPath(baseUrl));
+    this.baseHostname = new URL(baseUrl).hostname;
   }
 
   /**
-   * @param {'images' | 'scripts' | 'styles'} resourceType
+   * @param {'images' | 'scripts' | 'links'} resourceType
    * @returns {Promise<void>}
    */
   processResources(resourceType) {
@@ -60,37 +61,61 @@ export class ResourceProcessorService {
     return extractor ? extractor() : [];
   }
 
+  _isLocalResource(resourceUrl) {
+    try {
+      const resourceHostname = new URL(resourceUrl).hostname;
+      return resourceHostname === this.baseHostname;
+    } catch {
+      return false;
+    }
+  }
+
   _extractImages() {
     const imagePaths = this.htmlParser.getImageSources();
-    return imagePaths.map((originalPath) => ({
-      originalPath,
-      url: buildResourceUrl(this.baseUrl, originalPath),
-      fileName: formatFilePath(buildResourceUrl(this.baseUrl, originalPath)),
-      type: "img",
-      attribute: "src",
-    }));
+    return imagePaths
+      .map((originalPath) => {
+        const url = buildResourceUrl(this.baseUrl, originalPath);
+        return {
+          originalPath,
+          url,
+          fileName: formatFilePath(url),
+          type: "img",
+          attribute: "src",
+        };
+      })
+      .filter((resource) => this._isLocalResource(resource.url));
   }
 
   _extractScripts() {
     const scriptPaths = this.htmlParser.getScriptSources();
-    return scriptPaths.map((originalPath) => ({
-      originalPath,
-      url: buildResourceUrl(this.baseUrl, originalPath),
-      fileName: formatFilePath(buildResourceUrl(this.baseUrl, originalPath)),
-      type: "script",
-      attribute: "src",
-    }));
+    return scriptPaths
+      .map((originalPath) => {
+        const url = buildResourceUrl(this.baseUrl, originalPath);
+        return {
+          originalPath,
+          url,
+          fileName: formatFilePath(url),
+          type: "script",
+          attribute: "src",
+        };
+      })
+      .filter((resource) => this._isLocalResource(resource.url));
   }
 
-  _extractStyles() {
+  _extractLinks() {
     const stylePaths = this.htmlParser.getStyleSources();
-    return stylePaths.map((originalPath) => ({
-      originalPath,
-      url: buildResourceUrl(this.baseUrl, originalPath),
-      fileName: formatFilePath(buildResourceUrl(this.baseUrl, originalPath)),
-      type: "link",
-      attribute: "href",
-    }));
+    return stylePaths
+      .map((originalPath) => {
+        const url = buildResourceUrl(this.baseUrl, originalPath);
+        return {
+          originalPath,
+          url,
+          fileName: formatFilePath(url),
+          type: "link",
+          attribute: "href",
+        };
+      })
+      .filter((resource) => this._isLocalResource(resource.url));
   }
 
   _saveAndUpdateResource(resource, data) {
