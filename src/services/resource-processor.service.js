@@ -103,8 +103,8 @@ export class ResourceProcessorService {
   }
 
   _extractLinks() {
-    const stylePaths = this.htmlParser.getStyleSources();
-    return stylePaths
+    const linkPaths = this.htmlParser.getLinkSources();
+    return linkPaths
       .map((originalPath) => {
         const url = buildResourceUrl(this.baseUrl, originalPath);
         return {

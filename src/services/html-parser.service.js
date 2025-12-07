@@ -13,7 +13,7 @@ export class HtmlParserService {
     return this._getResourceSources("script", "src");
   }
 
-  getStyleSources() {
+  getLinkSources() {
     return this._getResourceSources("link[href]", "href");
   }
 

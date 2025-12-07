@@ -88,12 +88,12 @@ describe("HtmlParserService", () => {
     });
   });
 
-  describe("getStyleSources", () => {
+  describe("getLinkSources", () => {
     it("должен извлекать href всех link элементов", async () => {
       const html = await readFixture("styles-multiple.html");
 
       const parser = new HtmlParserService(html);
-      const sources = parser.getStyleSources();
+      const sources = parser.getLinkSources();
 
       expect(sources).toEqual([
         "/css/main.css",
@@ -106,7 +106,7 @@ describe("HtmlParserService", () => {
       const html = await readFixture("styles-with-inline.html");
 
       const parser = new HtmlParserService(html);
-      const sources = parser.getStyleSources();
+      const sources = parser.getLinkSources();
 
       expect(sources).toEqual(["/css/main.css"]);
     });
@@ -115,7 +115,7 @@ describe("HtmlParserService", () => {
       const html = await readFixture("no-styles.html");
 
       const parser = new HtmlParserService(html);
-      const sources = parser.getStyleSources();
+      const sources = parser.getLinkSources();
 
       expect(sources).toEqual([]);
     });
@@ -126,7 +126,12 @@ describe("HtmlParserService", () => {
       const html = await readFixture("replace-image.html");
 
       const parser = new HtmlParserService(html);
-      parser.replaceResourceSource("img", "src", "/assets/image.png", "/new/path/image.png");
+      parser.replaceResourceSource(
+        "img",
+        "src",
+        "/assets/image.png",
+        "/new/path/image.png"
+      );
 
       const updatedHtml = parser.getHtml();
       expect(updatedHtml).toContain('src="/new/path/image.png"');
@@ -137,7 +142,12 @@ describe("HtmlParserService", () => {
       const html = await readFixture("replace-script.html");
 
       const parser = new HtmlParserService(html);
-      parser.replaceResourceSource("script", "src", "/js/app.js", "/new/app.js");
+      parser.replaceResourceSource(
+        "script",
+        "src",
+        "/js/app.js",
+        "/new/app.js"
+      );
 
       const updatedHtml = parser.getHtml();
       expect(updatedHtml).toContain('src="/new/app.js"');
@@ -148,7 +158,12 @@ describe("HtmlParserService", () => {
       const html = await readFixture("replace-style.html");
 
       const parser = new HtmlParserService(html);
-      parser.replaceResourceSource("link", "href", "/css/main.css", "/new/main.css");
+      parser.replaceResourceSource(
+        "link",
+        "href",
+        "/css/main.css",
+        "/new/main.css"
+      );
 
       const updatedHtml = parser.getHtml();
       expect(updatedHtml).toContain('href="/new/main.css"');
@@ -159,7 +174,12 @@ describe("HtmlParserService", () => {
       const html = await readFixture("replace-multiple-images.html");
 
       const parser = new HtmlParserService(html);
-      parser.replaceResourceSource("img", "src", "/image1.png", "/new/image1.png");
+      parser.replaceResourceSource(
+        "img",
+        "src",
+        "/image1.png",
+        "/new/image1.png"
+      );
 
       const updatedHtml = parser.getHtml();
       expect(updatedHtml).toContain('src="/new/image1.png"');
@@ -181,7 +201,12 @@ describe("HtmlParserService", () => {
       const html = await readFixture("replace-image.html");
 
       const parser = new HtmlParserService(html);
-      parser.replaceResourceSource("img", "src", "/assets/image.png", "/new.png");
+      parser.replaceResourceSource(
+        "img",
+        "src",
+        "/assets/image.png",
+        "/new.png"
+      );
       const result = parser.getHtml();
 
       expect(result).toContain('src="/new.png"');
