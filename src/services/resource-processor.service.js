@@ -5,6 +5,8 @@ import { buildResourceUrl } from "../utils/buildResourceUrl.js";
 import path from "path";
 
 export class ResourceProcessorService {
+  #_resourceTypes = ["images", "scripts", "styles"];
+
   constructor(baseUrl, outputDir, htmlParser) {
     this.baseUrl = baseUrl;
     this.outputDir = outputDir;
@@ -17,6 +19,16 @@ export class ResourceProcessorService {
    * @returns {Promise<void>}
    */
   processResources(resourceType) {
+    if (!this.#_resourceTypes.includes(resourceType)) {
+      return Promise.reject(
+        new Error(
+          `Поддерживаются только следующие типы ресурсов: ${this.#_resourceTypes.join(
+            ", "
+          )}`
+        )
+      );
+    }
+
     const resources = this._extractResources(resourceType);
 
     if (resources.length === 0) {
@@ -36,11 +48,13 @@ export class ResourceProcessorService {
   }
 
   _extractResources(resourceType) {
-    const extractors = {
-      images: () => this._extractImages(),
-      scripts: () => this._extractScripts(),
-      styles: () => this._extractStyles(),
-    };
+    const extractors = this.#_resourceTypes.reduce((acc, type) => {
+      acc[type] =
+        this[`_extract${type.charAt(0).toUpperCase() + type.slice(1)}`].bind(
+          this
+        );
+      return acc;
+    }, {});
 
     const extractor = extractors[resourceType];
     return extractor ? extractor() : [];
@@ -82,7 +96,7 @@ export class ResourceProcessorService {
   _saveAndUpdateResource(resource, data) {
     return writeFile(this.resourceDirName, resource.fileName, data).then(() => {
       const newPath = path.join(formatDirPath(this.baseUrl), resource.fileName);
-      this.htmlParser.replaceResourcePath(
+      this.htmlParser.replaceResourceSource(
         resource.type,
         resource.attribute,
         resource.originalPath,

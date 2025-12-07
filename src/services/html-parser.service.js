@@ -28,8 +28,11 @@ export class HtmlParserService {
     return sources;
   }
 
-  replaceResourcePath(type, attribute, originalPath, newPath) {
-    this._$(`${type}[${attribute}="${originalPath}"]`).attr(attribute, newPath);
+  replaceResourceSource(type, attribute, originalSource, newSource) {
+    this._$(`${type}[${attribute}="${originalSource}"]`).attr(
+      attribute,
+      newSource
+    );
   }
 
   getHtml() {
