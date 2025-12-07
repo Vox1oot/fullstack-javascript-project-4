@@ -20,20 +20,12 @@ export class HtmlParserService {
   _getResourceSources(selector, attribute) {
     const sources = [];
     this._$(selector).each((_, element) => {
-      const value = this._$(element).attr(attribute);
-      if (value && this._isLocalResource(value)) {
-        sources.push(value);
+      const source = this._$(element).attr(attribute);
+      if (source && !source.startsWith("data:")) {
+        sources.push(source);
       }
     });
     return sources;
-  }
-
-  _isLocalResource(url) {
-    return !(
-      url.startsWith("data:") ||
-      url.startsWith("http://") ||
-      url.startsWith("https://")
-    );
   }
 
   replaceResourcePath(type, attribute, originalPath, newPath) {
