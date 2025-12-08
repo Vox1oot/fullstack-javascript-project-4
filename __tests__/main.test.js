@@ -2,7 +2,7 @@ import nock from "nock";
 import fs from "node:fs/promises";
 import path from "path";
 import os from "os";
-import { startApplication } from "../src/main.js";
+import startApplication from "../src/main.js";
 
 describe("startApplication - error handling", () => {
   let tempDir;
@@ -46,7 +46,10 @@ describe("startApplication - error handling", () => {
 
       nock("https://example.com")
         .get("/page")
-        .replyWithError({ code: "ECONNREFUSED", message: "Connection refused" });
+        .replyWithError({
+          code: "ECONNREFUSED",
+          message: "Connection refused",
+        });
 
       await expect(startApplication(url, tempDir)).rejects.toThrow();
     });
