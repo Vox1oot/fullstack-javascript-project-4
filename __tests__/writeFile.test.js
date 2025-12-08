@@ -44,11 +44,41 @@ describe("writeFile", () => {
     expect(savedContent).toBe(cssContent);
   });
 
-  it("должен выбросить ошибку при записи в несуществующую директорию", async () => {
+  it("должен создать директорию если она не существует", async () => {
+    const newDir = path.join(tempDir, "new", "nested", "dir");
     const fileName = "test.html";
     const content = "<html><body>Test</body></html>";
-    const invalidDir = "/nonexistent/directory";
 
-    await expect(writeFile(invalidDir, fileName, content)).rejects.toThrow();
+    const filePath = await writeFile(newDir, fileName, content);
+
+    const savedContent = await fs.readFile(filePath, "utf-8");
+    expect(savedContent).toBe(content);
+    expect(filePath).toBe(path.join(newDir, fileName));
+  });
+
+  describe("error handling", () => {
+    it("должен выбросить ошибку при записи в защищенную директорию", async () => {
+      const fileName = "test.html";
+      const content = "<html><body>Test</body></html>";
+      const invalidDir = "/root/protected";
+
+      await expect(writeFile(invalidDir, fileName, content)).rejects.toThrow();
+    });
+
+    it("должен выбросить ошибку при недостатке прав на создание директории", async () => {
+      const fileName = "test.html";
+      const content = "<html><body>Test</body></html>";
+      const invalidDir = "/sys/kernel";
+
+      await expect(writeFile(invalidDir, fileName, content)).rejects.toThrow();
+    });
+
+
+    it("должен выбросить ошибку при попытке записи файла с недопустимым именем", async () => {
+      const invalidFileName = "test\x00.html";
+      const content = "<html><body>Test</body></html>";
+
+      await expect(writeFile(tempDir, invalidFileName, content)).rejects.toThrow();
+    });
   });
 });

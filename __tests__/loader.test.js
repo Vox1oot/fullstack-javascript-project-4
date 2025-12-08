@@ -29,22 +29,6 @@ describe("loader", () => {
       expect(data).toBe(cssContent);
     });
 
-    it("должен обработать ошибку при неудачном HTTP-запросе", async () => {
-      const url = "https://example.com/notfound";
-
-      nock("https://example.com").get("/notfound").reply(404);
-
-      await expect(loader.load(url)).rejects.toThrow();
-    });
-
-    it("должен обработать ошибку сети", async () => {
-      const url = "https://example.com/error";
-
-      nock("https://example.com").get("/error").replyWithError("Network error");
-
-      await expect(loader.load(url)).rejects.toThrow();
-    });
-
     it("должен загружать бинарные данные с правильной конфигурацией", async () => {
       const url = "https://example.com/image.png";
       const imageBuffer = Buffer.from("fake-image-data");
@@ -56,6 +40,88 @@ describe("loader", () => {
       const data = await loader.load(url, { responseType: "arraybuffer" });
 
       expect(Buffer.isBuffer(data)).toBe(true);
+    });
+
+    describe("HTTP errors", () => {
+      it("должен выбросить ошибку при 404", async () => {
+        const url = "https://example.com/notfound";
+
+        nock("https://example.com").get("/notfound").reply(404);
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен выбросить ошибку при 403", async () => {
+        const url = "https://example.com/forbidden";
+
+        nock("https://example.com").get("/forbidden").reply(403);
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен выбросить ошибку при 500", async () => {
+        const url = "https://example.com/server-error";
+
+        nock("https://example.com").get("/server-error").reply(500);
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен выбросить ошибку при 502", async () => {
+        const url = "https://example.com/bad-gateway";
+
+        nock("https://example.com").get("/bad-gateway").reply(502);
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен выбросить ошибку при 503", async () => {
+        const url = "https://example.com/service-unavailable";
+
+        nock("https://example.com").get("/service-unavailable").reply(503);
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+    });
+
+    describe("network errors", () => {
+      it("должен обработать ошибку при отказе в соединении", async () => {
+        const url = "https://example.com/error";
+
+        nock("https://example.com")
+          .get("/error")
+          .replyWithError({ code: "ECONNREFUSED", message: "Connection refused" });
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен обработать ошибку при неизвестном хосте", async () => {
+        const url = "https://example.com/error";
+
+        nock("https://example.com")
+          .get("/error")
+          .replyWithError({ code: "ENOTFOUND", message: "Host not found" });
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен обработать ошибку таймаута", async () => {
+        const url = "https://example.com/timeout";
+
+        nock("https://example.com")
+          .get("/timeout")
+          .replyWithError({ code: "ETIMEDOUT", message: "Timeout" });
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
+
+      it("должен обработать общую сетевую ошибку", async () => {
+        const url = "https://example.com/error";
+
+        nock("https://example.com").get("/error").replyWithError("Network error");
+
+        await expect(loader.load(url)).rejects.toThrow();
+      });
     });
   });
 
@@ -165,6 +231,53 @@ describe("loader", () => {
       expect(resources[0].toString()).toBe("first");
       expect(resources[1].toString()).toBe("second");
       expect(resources[2].toString()).toBe("third");
+    });
+
+    describe("error handling", () => {
+      it("должен выбросить ошибку если один из ресурсов недоступен (404)", async () => {
+        const urls = [
+          "https://example.com/valid.png",
+          "https://example.com/missing.png",
+        ];
+
+        nock("https://example.com")
+          .get("/valid.png")
+          .reply(200, Buffer.from("valid"))
+          .get("/missing.png")
+          .reply(404);
+
+        await expect(loader.loadResources(urls)).rejects.toThrow();
+      });
+
+      it("должен выбросить ошибку если один из ресурсов возвращает 500", async () => {
+        const urls = [
+          "https://example.com/resource1.js",
+          "https://example.com/resource2.js",
+        ];
+
+        nock("https://example.com")
+          .get("/resource1.js")
+          .reply(200, Buffer.from("code"))
+          .get("/resource2.js")
+          .reply(500);
+
+        await expect(loader.loadResources(urls)).rejects.toThrow();
+      });
+
+      it("должен выбросить ошибку при сетевой проблеме с одним из ресурсов", async () => {
+        const urls = [
+          "https://example.com/resource1.css",
+          "https://example.com/resource2.css",
+        ];
+
+        nock("https://example.com")
+          .get("/resource1.css")
+          .reply(200, Buffer.from("css"))
+          .get("/resource2.css")
+          .replyWithError({ code: "ECONNREFUSED", message: "Connection refused" });
+
+        await expect(loader.loadResources(urls)).rejects.toThrow();
+      });
     });
   });
 });

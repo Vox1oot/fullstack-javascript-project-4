@@ -16,7 +16,7 @@ export const startApplication = (url, outputDir) => {
   const htmlFileName = formatFilePath(url);
   debug("имя html файла: %s", htmlFileName);
 
-  loader
+  return loader
     .load(url)
     .then((data) => {
       debug("html загружен, размер: %d байт", data.length);
@@ -44,10 +44,10 @@ export const startApplication = (url, outputDir) => {
     .then((pathName) => {
       debug("страница успешно загружена в: %s", pathName);
       logger.success(pathName);
+      return true;
     })
     .catch((error) => {
-      debug("произошла ошибка: %s", error.message);
       logger.error(error.message);
-      process.exit(1);
+      throw error;
     });
 };

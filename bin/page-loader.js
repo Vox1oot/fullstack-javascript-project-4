@@ -9,7 +9,9 @@ program
   .argument("<url>", "URL to download")
   .option("-o, --output [dir]", "output dir", process.cwd())
   .action((url, options) => {
-    startApplication(url, options.output);
+    startApplication(url, options.output)
+      .then(() => process.exit(0))
+      .catch(() => process.exit(1));
   });
 
 program.parse();

@@ -54,7 +54,11 @@ export class ResourceProcessorService {
     return loader
       .loadResources(resources.map((r) => r.url))
       .then((resourcesData) => {
-        debug("сохраняем %d ресурсов типа %s", resourcesData.length, resourceType);
+        debug(
+          "сохраняем %d ресурсов типа %s",
+          resourcesData.length,
+          resourceType
+        );
         const savePromises = resourcesData.map((data, index) => {
           const resource = resources[index];
           return this._saveAndUpdateResource(resource, data);

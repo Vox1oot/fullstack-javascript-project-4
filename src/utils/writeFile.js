@@ -8,7 +8,19 @@ const ensureDirExists = (dir) => {
       .catch(() => {
         fs.mkdir(dir, { recursive: true })
           .then(() => resolve())
-          .catch(reject);
+          .catch((error) => {
+            if (error.code === "EACCES") {
+              reject(
+                new Error(`Недостаточно прав для создания директории: ${dir}`)
+              );
+            } else {
+              reject(
+                new Error(
+                  `Не удалось создать директорию ${dir}: ${error.message}`
+                )
+              );
+            }
+          });
       });
   });
 };
@@ -20,7 +32,19 @@ export const writeFile = (outputDir, fileName, data) => {
         const filePath = path.join(outputDir, fileName);
         fs.writeFile(filePath, data)
           .then(() => resolve(filePath))
-          .catch(reject);
+          .catch((error) => {
+            if (error.code === "EACCES") {
+              reject(
+                new Error(`Недостаточно прав для записи файла: ${filePath}`)
+              );
+            } else {
+              reject(
+                new Error(
+                  `Не удалось записать файл ${filePath}: ${error.message}`
+                )
+              );
+            }
+          });
       })
       .catch(reject);
   });

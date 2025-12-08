@@ -4,6 +4,13 @@ import Debug from "debug";
 const debug = Debug("page-loader:loader");
 
 class Loader {
+  #_statusMessages = {
+    404: "Ресурс не найден (404):",
+    403: "Доступ запрещен (403):",
+    500: "Ошибка сервера (500):",
+    default: "HTTP ошибка при загрузке ресурса:",
+  };
+
   constructor() {}
 
   load(url, config) {
@@ -11,12 +18,24 @@ class Loader {
     return axios
       .get(url, config)
       .then((response) => {
-        debug("страница загружена успешно: %s (статус: %d)", url, response.status);
+        debug(
+          "страница загружена успешно: %s (статус: %d)",
+          url,
+          response.status
+        );
         return response.data;
       })
       .catch((error) => {
-        debug("ошибка загрузки страницы: %s (ошибка: %s)", url, error.message);
-        throw error;
+        debug("ошибка загрузки страницы: %s", error.message);
+
+        if (error.response) {
+          const { status } = error.response;
+          const message =
+            this.#_statusMessages[status] || this.#_statusMessages.default;
+          throw new Error(`${message} ${url}`);
+        }
+
+        throw new Error(`Ошибка загрузки ${url}: ${error.message}`);
       });
   }
 

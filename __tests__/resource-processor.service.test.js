@@ -381,4 +381,113 @@ describe("ResourceProcessorService", () => {
       );
     });
   });
+
+  describe("error handling", () => {
+    it("должен выбросить ошибку если изображение недоступно (404)", async () => {
+      const baseUrl = "https://example.com";
+      const html = await readFixture("single-image.html");
+
+      nock("https://example.com").get("/assets/image.png").reply(404);
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await expect(processor.processResources("images")).rejects.toThrow();
+    });
+
+    it("должен выбросить ошибку если скрипт недоступен (500)", async () => {
+      const baseUrl = "https://example.com";
+      const html = await readFixture("single-script.html");
+
+      nock("https://example.com").get("/js/app.js").reply(500);
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await expect(processor.processResources("scripts")).rejects.toThrow();
+    });
+
+    it("должен выбросить ошибку если стиль недоступен (403)", async () => {
+      const baseUrl = "https://example.com";
+      const html = await readFixture("single-style.html");
+
+      nock("https://example.com").get("/css/main.css").reply(403);
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await expect(processor.processResources("links")).rejects.toThrow();
+    });
+
+    it("должен выбросить ошибку при сетевой проблеме с ресурсом", async () => {
+      const baseUrl = "https://example.com";
+      const html = await readFixture("single-image.html");
+
+      nock("https://example.com")
+        .get("/assets/image.png")
+        .replyWithError({ code: "ECONNREFUSED", message: "Connection refused" });
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await expect(processor.processResources("images")).rejects.toThrow();
+    });
+
+    it("должен выбросить ошибку если не удалось загрузить один из множества ресурсов", async () => {
+      const baseUrl = "https://example.com";
+      const html = await readFixture("multiple-images.html");
+
+      nock("https://example.com")
+        .get("/image1.png")
+        .reply(200, Buffer.from("img1"))
+        .get("/image2.jpg")
+        .reply(404)
+        .get("/image3.svg")
+        .reply(200, Buffer.from("img3"));
+
+      const htmlParser = new HtmlParserService(html);
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        tempDir,
+        htmlParser
+      );
+
+      await expect(processor.processResources("images")).rejects.toThrow();
+    });
+
+    it("должен выбросить ошибку при невозможности записи файла ресурса", async () => {
+      const baseUrl = "https://example.com";
+      const html = await readFixture("single-image.html");
+
+      nock("https://example.com")
+        .get("/assets/image.png")
+        .reply(200, Buffer.from("img"));
+
+      const htmlParser = new HtmlParserService(html);
+      const invalidDir = "/root/protected";
+      const processor = new ResourceProcessorService(
+        baseUrl,
+        invalidDir,
+        htmlParser
+      );
+
+      await expect(processor.processResources("images")).rejects.toThrow();
+    });
+  });
 });
