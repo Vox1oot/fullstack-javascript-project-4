@@ -90,6 +90,4 @@ npm run lint
 
 ### Asciinema
 
-https://asciinema.org/a/KM0ZAYbW5YJHH1ENXavHFPaft
-https://asciinema.org/a/tj5aFOb7RVrpZXCeLWr4XGL1m
-https://asciinema.org/a/uSzSx4Y5tIMzV0wLYBmJFl3oj
+https://asciinema.org/a/3rG0IDamNmHeDwQmcLmYvLDCs
