@@ -5,7 +5,7 @@ import { getMainTasks } from "./tasks.js";
 
 const debug = Debug("page-loader:main");
 
-export const startApplication = (url, outputDir) => {
+export default function startApplication(url, outputDir) {
   debug("запуск приложения");
   debug("адрес: %s", url);
   debug("директория вывода: %s", outputDir);
@@ -24,4 +24,4 @@ export const startApplication = (url, outputDir) => {
       logger.error(error.message);
       throw error;
     });
-};
+}

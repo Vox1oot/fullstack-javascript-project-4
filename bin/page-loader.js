@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { program } from "commander";
-import { startApplication } from "../src/main.js";
+import startApplication from "../src/main.js";
 
 program
   .version("1.0.0")
