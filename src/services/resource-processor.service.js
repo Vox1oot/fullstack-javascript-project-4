@@ -1,8 +1,11 @@
+import Debug from "debug";
 import { formatFilePath, formatDirPath } from "../utils/formatter.js";
 import { loader } from "./loader.service.js";
 import { writeFile } from "../utils/writeFile.js";
 import { buildResourceUrl } from "../utils/buildResourceUrl.js";
 import path from "path";
+
+const debug = Debug("page-loader:resource-processor");
 
 export class ResourceProcessorService {
   #_resourceTypes = ["images", "scripts", "links"];
@@ -13,6 +16,12 @@ export class ResourceProcessorService {
     this.htmlParser = htmlParser;
     this.resourceDirName = path.resolve(outputDir, formatDirPath(baseUrl));
     this.baseHostname = new URL(baseUrl).hostname;
+
+    debug("инициализирован обработчик ресурсов");
+    debug("базовый url: %s", baseUrl);
+    debug("директория вывода: %s", outputDir);
+    debug("директория ресурсов: %s", this.resourceDirName);
+    debug("базовый hostname: %s", this.baseHostname);
   }
 
   /**
@@ -20,6 +29,8 @@ export class ResourceProcessorService {
    * @returns {Promise<void>}
    */
   processResources(resourceType) {
+    debug("обрабатываем ресурсы типа: %s", resourceType);
+
     if (!this.#_resourceTypes.includes(resourceType)) {
       return Promise.reject(
         new Error(
@@ -31,20 +42,28 @@ export class ResourceProcessorService {
     }
 
     const resources = this._extractResources(resourceType);
+    debug("найдено %d ресурсов типа %s", resources.length, resourceType);
 
     if (resources.length === 0) {
+      debug("нет ресурсов типа %s для обработки", resourceType);
       return Promise.resolve();
     }
+
+    resources.forEach((r) => debug("  - %s -> %s", r.url, r.fileName));
 
     return loader
       .loadResources(resources.map((r) => r.url))
       .then((resourcesData) => {
+        debug("сохраняем %d ресурсов типа %s", resourcesData.length, resourceType);
         const savePromises = resourcesData.map((data, index) => {
           const resource = resources[index];
           return this._saveAndUpdateResource(resource, data);
         });
 
         return Promise.all(savePromises);
+      })
+      .then(() => {
+        debug("все ресурсы типа %s обработаны успешно", resourceType);
       });
   }
 
@@ -119,8 +138,10 @@ export class ResourceProcessorService {
   }
 
   _saveAndUpdateResource(resource, data) {
+    debug("сохраняем ресурс: %s", resource.fileName);
     return writeFile(this.resourceDirName, resource.fileName, data).then(() => {
       const newPath = path.join(formatDirPath(this.baseUrl), resource.fileName);
+      debug("обновляем html: %s -> %s", resource.originalPath, newPath);
       this.htmlParser.replaceResourceSource(
         resource.type,
         resource.attribute,

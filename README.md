@@ -41,12 +41,42 @@ page-loader https://example.com
 page-loader --output /var/tmp https://example.com
 ```
 
+### Отладка
+
+Утилита поддерживает логирование с помощью библиотеки `debug`. Для включения логов используйте переменную окружения `DEBUG`:
+
+#### Все логи приложения
+
+```bash
+DEBUG=page-loader:* page-loader -o ./resources https://example.com
+```
+
+#### Логи конкретных модулей
+
+```bash
+# Только HTTP-запросы и загрузка
+DEBUG=page-loader:loader page-loader -o ./resources https://example.com
+
+# Только обработка ресурсов
+DEBUG=page-loader:resource-processor page-loader -o ./resources https://example.com
+
+# Основной процесс приложения
+DEBUG=page-loader:main page-loader -o ./resources https://example.com
+```
+
 ### Разработка
 
 Запуск тестов:
 
 ```bash
+# Только тесты
 npm test
+
+# Тесты и дебаг
+npm test:debug
+
+# Тесты в режиме отслеживания
+npm test:watch
 ```
 
 Запуск линтера:
