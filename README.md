@@ -60,6 +60,9 @@ DEBUG=page-loader:loader page-loader -o ./resources https://example.com
 # Только обработка ресурсов
 DEBUG=page-loader:resource-processor page-loader -o ./resources https://example.com
 
+# Только задачи
+DEBUG=page-loader:tasks page-loader -o ./resources https://example.com
+
 # Основной процесс приложения
 DEBUG=page-loader:main page-loader -o ./resources https://example.com
 ```
