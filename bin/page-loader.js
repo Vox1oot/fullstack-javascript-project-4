@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { program } from 'commander';
-import startApplication from '../src/main.js';
+import { program } from 'commander'
+import startApplication from '../src/main.js'
 
 program
   .version('1.0.0')
@@ -11,7 +11,7 @@ program
   .action((url, options) => {
     startApplication(url, options.output)
       .then(() => process.exit(0))
-      .catch(() => process.exit(1));
-  });
+      .catch(() => process.exit(1))
+  })
 
-program.parse();
+program.parse()

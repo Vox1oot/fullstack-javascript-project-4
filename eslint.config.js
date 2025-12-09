@@ -1,6 +1,6 @@
-import js from '@eslint/js';
-import stylistic from '@stylistic/eslint-plugin';
-import globals from 'globals';
+import js from '@eslint/js'
+import stylistic from '@stylistic/eslint-plugin'
+import globals from 'globals'
 
 export default [
   js.configs.recommended,
@@ -40,8 +40,9 @@ export default [
         },
       ],
       '@stylistic/indent': ['error', 2],
+      '@stylistic/semi': ['error', 'never'],
+      '@stylistic/brace-style': ['error', 'stroustrup'],
       '@stylistic/quotes': ['error', 'single'],
-      '@stylistic/semi': ['error', 'always'],
       '@stylistic/comma-dangle': ['error', 'always-multiline'],
       '@stylistic/object-curly-spacing': ['error', 'always'],
       '@stylistic/array-bracket-spacing': ['error', 'never'],
@@ -62,4 +63,4 @@ export default [
       'no-restricted-syntax': 'off',
     },
   },
-];
+]
