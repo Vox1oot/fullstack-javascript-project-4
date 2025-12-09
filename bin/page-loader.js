@@ -7,7 +7,7 @@ program
   .version("1.0.0")
   .description("Page loader utility")
   .argument("<url>", "URL to download")
-  .option("-o, --output [dir]", "output dir", process.cwd())
+  .option("-o, --output [dir]", "output dir")
   .action((url, options) => {
     startApplication(url, options.output)
       .then(() => process.exit(0))
