@@ -144,7 +144,7 @@ describe('loader', () => {
       const resources = await loader.loadResources(urls)
 
       expect(resources).toHaveLength(3)
-      expect(resources.every((data) => Buffer.isBuffer(data))).toBe(true)
+      expect(resources.every(data => Buffer.isBuffer(data))).toBe(true)
     })
 
     it('должен загружать ресурсы как arraybuffer', async () => {
@@ -162,7 +162,7 @@ describe('loader', () => {
       const resources = await loader.loadResources(urls)
 
       expect(resources).toHaveLength(2)
-      expect(resources.every((data) => Buffer.isBuffer(data))).toBe(true)
+      expect(resources.every(data => Buffer.isBuffer(data))).toBe(true)
     })
 
     it('должен возвращать пустой массив для пустого списка URL', async () => {
@@ -208,7 +208,7 @@ describe('loader', () => {
       const resources = await loader.loadResources(urls)
 
       expect(resources).toHaveLength(3)
-      expect(resources.every((data) => Buffer.isBuffer(data))).toBe(true)
+      expect(resources.every(data => Buffer.isBuffer(data))).toBe(true)
     })
 
     it('должен сохранять порядок загруженных ресурсов', async () => {

@@ -31,9 +31,9 @@ export const getMainTasks = () => {
     [
       {
         title: 'Загрузка HTML страницы',
-        task: (ctx) => {
+        task: ctx => {
           debug('загружаем html страницу: %s', ctx.url)
-          return loader.load(ctx.url).then((data) => {
+          return loader.load(ctx.url).then(data => {
             htmlParser = new HtmlParserService(data)
             resourceProcessor = new ResourceProcessorService(
               ctx.url,
@@ -58,7 +58,7 @@ export const getMainTasks = () => {
       },
       {
         title: 'Сохранение html файла',
-        task: (ctx) => {
+        task: ctx => {
           debug('записываем html файл: %s', ctx.htmlFileName)
           const updatedHtml = htmlParser.getHtml()
           return writeFile(ctx.outputDir, ctx.htmlFileName, updatedHtml)

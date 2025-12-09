@@ -41,6 +41,8 @@ export default [
       ],
       '@stylistic/indent': ['error', 2],
       '@stylistic/semi': ['error', 'never'],
+      '@stylistic/arrow-parens': ['error', 'as-needed'],
+      '@stylistic/operator-linebreak': ['error', 'before'],
       '@stylistic/brace-style': ['error', 'stroustrup'],
       '@stylistic/quotes': ['error', 'single'],
       '@stylistic/comma-dangle': ['error', 'always-multiline'],

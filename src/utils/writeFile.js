@@ -1,14 +1,14 @@
 import fs from 'fs/promises'
 import path from 'path'
 
-const ensureDirExists = (dir) => {
+const ensureDirExists = dir => {
   return new Promise((resolve, reject) => {
     fs.access(dir, fs.constants.F_OK)
       .then(() => resolve())
       .catch(() => {
         fs.mkdir(dir, { recursive: true })
           .then(() => resolve())
-          .catch((error) => {
+          .catch(error => {
             if (error.code === 'EACCES') {
               reject(
                 new Error(`Недостаточно прав для создания директории: ${dir}`),
@@ -33,7 +33,7 @@ export const writeFile = (outputDir, fileName, data) => {
         const filePath = path.join(outputDir, fileName)
         fs.writeFile(filePath, data)
           .then(() => resolve(filePath))
-          .catch((error) => {
+          .catch(error => {
             if (error.code === 'EACCES') {
               reject(
                 new Error(`Недостаточно прав для записи файла: ${filePath}`),

@@ -49,11 +49,11 @@ export class ResourceProcessorService {
       return Promise.resolve()
     }
 
-    resources.forEach((r) => debug('  - %s -> %s', r.url, r.fileName))
+    resources.forEach(r => debug('  - %s -> %s', r.url, r.fileName))
 
     return loader
-      .loadResources(resources.map((r) => r.url))
-      .then((resourcesData) => {
+      .loadResources(resources.map(r => r.url))
+      .then(resourcesData => {
         debug(
           'сохраняем %d ресурсов типа %s',
           resourcesData.length,
@@ -73,8 +73,8 @@ export class ResourceProcessorService {
 
   _extractResources(resourceType) {
     const extractors = this.#_resourceTypes.reduce((acc, type) => {
-      acc[type] =
-        this[`_extract${type.charAt(0).toUpperCase() + type.slice(1)}`].bind(
+      acc[type]
+        = this[`_extract${type.charAt(0).toUpperCase() + type.slice(1)}`].bind(
           this,
         )
       return acc
@@ -97,7 +97,7 @@ export class ResourceProcessorService {
   _extractImages() {
     const imagePaths = this.htmlParser.getImageSources()
     return imagePaths
-      .map((originalPath) => {
+      .map(originalPath => {
         const url = buildResourceUrl(this.baseUrl, originalPath)
         return {
           originalPath,
@@ -107,13 +107,13 @@ export class ResourceProcessorService {
           attribute: 'src',
         }
       })
-      .filter((resource) => this._isLocalResource(resource.url))
+      .filter(resource => this._isLocalResource(resource.url))
   }
 
   _extractScripts() {
     const scriptPaths = this.htmlParser.getScriptSources()
     return scriptPaths
-      .map((originalPath) => {
+      .map(originalPath => {
         const url = buildResourceUrl(this.baseUrl, originalPath)
         return {
           originalPath,
@@ -123,13 +123,13 @@ export class ResourceProcessorService {
           attribute: 'src',
         }
       })
-      .filter((resource) => this._isLocalResource(resource.url))
+      .filter(resource => this._isLocalResource(resource.url))
   }
 
   _extractLinks() {
     const linkPaths = this.htmlParser.getLinkSources()
     return linkPaths
-      .map((originalPath) => {
+      .map(originalPath => {
         const url = buildResourceUrl(this.baseUrl, originalPath)
         return {
           originalPath,
@@ -139,7 +139,7 @@ export class ResourceProcessorService {
           attribute: 'href',
         }
       })
-      .filter((resource) => this._isLocalResource(resource.url))
+      .filter(resource => this._isLocalResource(resource.url))
   }
 
   _saveAndUpdateResource(resource, data) {
