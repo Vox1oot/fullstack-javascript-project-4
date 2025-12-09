@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import stylistic from '@stylistic/eslint-plugin'
 import globals from 'globals'
+import jest from 'eslint-plugin-jest'
 
 export default [
   js.configs.recommended,
@@ -41,7 +42,8 @@ export default [
       ],
       '@stylistic/indent': ['error', 2],
       '@stylistic/semi': ['error', 'never'],
-      '@stylistic/arrow-parens': ['error', 'always'],
+      '@stylistic/arrow-parens': [2, 'as-needed', { requireForBlockBody: true }],
+      '@stylistic/quote-props': ['error', 'as-needed'],
       '@stylistic/operator-linebreak': ['error', 'before'],
       '@stylistic/brace-style': ['error', 'stroustrup'],
       '@stylistic/quotes': ['error', 'single'],
@@ -61,7 +63,11 @@ export default [
   },
   {
     files: ['__tests__/**/*.js', '**/*.test.js'],
+    plugins: {
+      jest,
+    },
     rules: {
+      ...jest.configs.recommended.rules,
       'no-restricted-syntax': 'off',
     },
   },

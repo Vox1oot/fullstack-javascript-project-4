@@ -49,10 +49,10 @@ export class ResourceProcessorService {
       return Promise.resolve()
     }
 
-    resources.forEach((r) => debug('  - %s -> %s', r.url, r.fileName))
+    resources.forEach(r => debug('  - %s -> %s', r.url, r.fileName))
 
     return loader
-      .loadResources(resources.map((r) => r.url))
+      .loadResources(resources.map(r => r.url))
       .then((resourcesData) => {
         debug(
           'сохраняем %d ресурсов типа %s',
@@ -107,7 +107,7 @@ export class ResourceProcessorService {
           attribute: 'src',
         }
       })
-      .filter((resource) => this._isLocalResource(resource.url))
+      .filter(resource => this._isLocalResource(resource.url))
   }
 
   _extractScripts() {
@@ -123,7 +123,7 @@ export class ResourceProcessorService {
           attribute: 'src',
         }
       })
-      .filter((resource) => this._isLocalResource(resource.url))
+      .filter(resource => this._isLocalResource(resource.url))
   }
 
   _extractLinks() {
@@ -139,7 +139,7 @@ export class ResourceProcessorService {
           attribute: 'href',
         }
       })
-      .filter((resource) => this._isLocalResource(resource.url))
+      .filter(resource => this._isLocalResource(resource.url))
   }
 
   _saveAndUpdateResource(resource, data) {
