@@ -4,6 +4,7 @@ export const buildResourceUrl = (url, resourcePath) => {
   try {
     return new URL(resourcePath, origin).toString();
   } catch (error) {
+    console.error('Error building resource URL:', error);
     return resourcePath;
   }
 };

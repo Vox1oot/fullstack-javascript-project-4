@@ -1,4 +1,4 @@
-import * as cheerio from "cheerio";
+import * as cheerio from 'cheerio';
 
 export class HtmlParserService {
   constructor(html) {
@@ -6,22 +6,22 @@ export class HtmlParserService {
   }
 
   getImageSources() {
-    return this._getResourceSources("img", "src");
+    return this._getResourceSources('img', 'src');
   }
 
   getScriptSources() {
-    return this._getResourceSources("script", "src");
+    return this._getResourceSources('script', 'src');
   }
 
   getLinkSources() {
-    return this._getResourceSources("link[href]", "href");
+    return this._getResourceSources('link[href]', 'href');
   }
 
   _getResourceSources(selector, attribute) {
     const sources = [];
     this._$(selector).each((_, element) => {
       const source = this._$(element).attr(attribute);
-      if (source && !source.startsWith("data:")) {
+      if (source && !source.startsWith('data:')) {
         sources.push(source);
       }
     });
@@ -31,7 +31,7 @@ export class HtmlParserService {
   replaceResourceSource(type, attribute, originalSource, newSource) {
     this._$(`${type}[${attribute}="${originalSource}"]`).attr(
       attribute,
-      newSource
+      newSource,
     );
   }
 

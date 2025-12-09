@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-import { program } from "commander";
-import startApplication from "../src/main.js";
+import { program } from 'commander';
+import startApplication from '../src/main.js';
 
 program
-  .version("1.0.0")
-  .description("Page loader utility")
-  .argument("<url>", "URL to download")
-  .option("-o, --output [dir]", "output dir")
+  .version('1.0.0')
+  .description('Page loader utility')
+  .argument('<url>', 'URL to download')
+  .option('-o, --output [dir]', 'output dir')
   .action((url, options) => {
     startApplication(url, options.output)
       .then(() => process.exit(0))

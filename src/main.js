@@ -1,15 +1,15 @@
-import Debug from "debug";
-import fs from "fs/promises";
-import { formatFilePath } from "./utils/formatter.js";
-import { logger } from "./utils/logger.js";
-import { getMainTasks } from "./tasks.js";
+import Debug from 'debug';
+import fs from 'fs/promises';
+import { formatFilePath } from './utils/formatter.js';
+import { logger } from './utils/logger.js';
+import { getMainTasks } from './tasks.js';
 
-const debug = Debug("page-loader:main");
+const debug = Debug('page-loader:main');
 
 export default function startApplication(url, outputDir = process.cwd()) {
-  debug("запуск приложения");
-  debug("адрес: %s", url);
-  debug("директория вывода: %s", outputDir);
+  debug('запуск приложения');
+  debug('адрес: %s', url);
+  debug('директория вывода: %s', outputDir);
 
   return fs
     .access(outputDir)
@@ -18,12 +18,12 @@ export default function startApplication(url, outputDir = process.cwd()) {
     })
     .then(() => {
       const htmlFileName = formatFilePath(url);
-      debug("имя html файла: %s", htmlFileName);
+      debug('имя html файла: %s', htmlFileName);
 
       return getMainTasks()
         .run({ url, outputDir, htmlFileName })
         .then(() => {
-          debug("Страница успешно загружена");
+          debug('Страница успешно загружена');
           logger.success(htmlFileName);
           return true;
         });
