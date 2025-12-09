@@ -6,10 +6,10 @@ import { HtmlParserService } from '../src/services/html-parser.service.js'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const getFixturePath = filename =>
+const getFixturePath = (filename) =>
   path.join(__dirname, '..', '__fixtures__', 'html-parser', filename)
 
-const readFixture = filename =>
+const readFixture = (filename) =>
   fs.readFile(getFixturePath(filename), 'utf-8')
 
 describe('HtmlParserService', () => {

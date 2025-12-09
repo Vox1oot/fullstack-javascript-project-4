@@ -17,7 +17,7 @@ class Loader {
     debug('загружаем страницу: %s', url)
     return axios
       .get(url, config)
-      .then(response => {
+      .then((response) => {
         debug(
           'страница загружена успешно: %s (статус: %d)',
           url,
@@ -25,7 +25,7 @@ class Loader {
         )
         return response.data
       })
-      .catch(error => {
+      .catch((error) => {
         debug('ошибка загрузки страницы: %s', error.message)
 
         if (error.response) {
@@ -41,11 +41,11 @@ class Loader {
 
   loadResources(urls) {
     debug('загружаем %d ресурсов', urls.length)
-    urls.forEach(url => debug('  - %s', url))
+    urls.forEach((url) => debug('  - %s', url))
 
     return Promise.all(
-      urls.map(url => this.load(url, { responseType: 'arraybuffer' })),
-    ).then(results => {
+      urls.map((url) => this.load(url, { responseType: 'arraybuffer' })),
+    ).then((results) => {
       debug('все %d ресурсов загружены успешно', urls.length)
       return results
     })

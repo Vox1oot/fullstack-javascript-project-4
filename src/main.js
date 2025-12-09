@@ -28,7 +28,7 @@ export default function startApplication(url, outputDir = process.cwd()) {
           return true
         })
     })
-    .catch(error => {
+    .catch((error) => {
       logger.error(error.message)
       throw error
     })
