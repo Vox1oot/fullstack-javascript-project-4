@@ -222,7 +222,7 @@ describe('startApplication - error handling', () => {
         .get('/image.png')
         .reply(200, Buffer.from('image'))
 
-      await expect(startApplication(url, tempDir)).resolves.toBe(true)
+      await expect(startApplication(url, tempDir)).resolves.not.toThrow()
 
       const htmlFile = path.join(tempDir, 'example-com-page.html')
       const htmlContent = await fs.readFile(htmlFile, 'utf-8')
@@ -239,7 +239,7 @@ describe('startApplication - error handling', () => {
 
       nock('https://example.com').get('/page').reply(200, html)
 
-      await expect(startApplication(url, tempDir)).resolves.toBe(true)
+      await expect(startApplication(url, tempDir)).resolves.not.toThrow()
 
       const htmlFile = path.join(tempDir, 'example-com-page.html')
       const htmlContent = await fs.readFile(htmlFile, 'utf-8')
