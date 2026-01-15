@@ -25,7 +25,6 @@ export default function startApplication(url, outputDir = process.cwd()) {
         .then(() => {
           debug('Страница успешно загружена')
           logger.success(htmlFileName)
-          return true
         })
     })
     .catch((error) => {
